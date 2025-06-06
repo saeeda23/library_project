@@ -37,6 +37,7 @@ CREATE TABLE Reservations (
     book_id INTEGER,
     reservation_date DATE DEFAULT CURRENT_DATE,
     status TEXT DEFAULT 'active',
+    notified_date DATE,
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (book_id) REFERENCES Books(book_id)
 );

@@ -116,6 +116,14 @@ def library_actions():
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
+    # Expire outdated notified reservations (older than 2 days)
+    c.execute("""
+        UPDATE Reservations
+        SET status = 'expired'
+        WHERE status = 'notified'
+          AND DATE('now') > DATE(notified_date, '+2 days')
+    """)
+
     c.execute("SELECT * FROM Books WHERE available_copies > 0")
     available_books = c.fetchall()
 
@@ -135,6 +143,30 @@ def library_actions():
 
         if form_type == 'borrow':
             book_id = request.form['book_id']
+
+            # Check for active reservation by another user
+            c.execute("""
+                SELECT * FROM Reservations
+                WHERE book_id = ? AND status IN ('active', 'notified')
+                ORDER BY reservation_id ASC
+                LIMIT 1
+            """, (book_id,))
+            reservation = c.fetchone()
+
+            if reservation:
+                if reservation['user_id'] != user_id:
+                    flash('This book is currently reserved by another user.')
+                    conn.close()
+                    return redirect('/library_actions')
+                elif reservation['status'] == 'notified':
+                    # Fulfill notified reservation if current user
+                    c.execute("""
+                        UPDATE Reservations
+                        SET status = 'fulfilled'
+                        WHERE reservation_id = ?
+                    """, (reservation['reservation_id'],))
+
+            # Proceed with borrowing
             c.execute("SELECT available_copies FROM Books WHERE book_id = ?", (book_id,))
             available = c.fetchone()
             if available and available['available_copies'] > 0:
@@ -147,6 +179,7 @@ def library_actions():
                 c.execute("""
                     UPDATE Books SET available_copies = available_copies - 1 WHERE book_id = ?
                 """, (book_id,))
+
                 conn.commit()
                 flash('Book borrowed successfully.')
             else:
@@ -154,11 +187,15 @@ def library_actions():
 
         elif form_type == 'return':
             transaction_id = request.form['transaction_id']
+
+            # Mark transaction as returned
             c.execute("""
                 UPDATE Transactions
                 SET return_date = DATE('now'), status = 'returned'
                 WHERE transaction_id = ? AND user_id = ?
             """, (transaction_id, user_id))
+
+            # Increment available copies
             c.execute("""
                 UPDATE Books
                 SET available_copies = available_copies + 1
@@ -166,14 +203,40 @@ def library_actions():
                     SELECT book_id FROM Transactions WHERE transaction_id = ?
                 )
             """, (transaction_id,))
+
+            # Get the book_id being returned
+            c.execute("SELECT book_id FROM Transactions WHERE transaction_id = ?", (transaction_id,))
+            result = c.fetchone()
+            if result:
+                book_id = result['book_id']
+
+                # Notify the next valid user in the reservation queue
+                c.execute("""
+                    SELECT * FROM Reservations
+                    WHERE book_id = ? AND status = 'active'
+                    ORDER BY reservation_id ASC
+                    LIMIT 1
+                """, (book_id,))
+                reservation = c.fetchone()
+
+                if reservation:
+                    c.execute("""
+                        UPDATE Reservations
+                        SET status = 'notified', notified_date = DATE('now')
+                        WHERE reservation_id = ?
+                    """, (reservation['reservation_id'],))
+                    flash(f"This book is now reserved for user ID {reservation['user_id']}.")
+
             conn.commit()
             flash('Book returned successfully.')
 
         elif form_type == 'reserve':
             book_id = request.form['book_id']
+
+            # Prevent duplicate reservation
             c.execute("""
                 SELECT * FROM Reservations
-                WHERE user_id = ? AND book_id = ? AND status = 'active'
+                WHERE user_id = ? AND book_id = ? AND status IN ('active', 'notified')
             """, (user_id, book_id))
             already_reserved = c.fetchone()
             if already_reserved:
