@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mt-5 px-3">
+  <p class="text-muted fst-italic mb-2">Saeeda, Rukhsar & Raihana proudly present</p>
+  <h1 class="display-5 fw-bold mb-3 text-teal">Welcome to Our Library Management System</h1>
+  <p class="lead mb-4 text-dark">
+    Explore, manage, and enjoy our curated collection of books. Seamless experience, timeless knowledge.
+  </p>
+
+  <div class="d-flex justify-content-center gap-3 mb-5">
+    <a href="/login" class="btn btn-lg btn-teal shadow px-4">
+      <i class="bi bi-box-arrow-in-right me-2"></i> Login
+    </a>
+  </div>
+
+  <hr class="my-5" style="border-top: 2px solid #0d9488;" />
+
+  <div class="mt-4">
+    <h3 class="mb-4 text-teal">Why Choose Our Library?</h3>
+    <div class="row justify-content-center g-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow rounded-4 h-100 bg-white">
+          <div class="card-body text-center p-4">
+            <i class="bi bi-book fs-1 mb-3 text-teal"></i>
+            <h5 class="card-title">Extensive Collection</h5>
+            <p class="card-text text-muted">Thousands of titles across all genres and disciplines.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow rounded-4 h-100 bg-white">
+          <div class="card-body text-center p-4">
+            <i class="bi bi-search fs-1 mb-3 text-teal"></i>
+            <h5 class="card-title">Smart Search</h5>
+            <p class="card-text text-muted">Filter by title, author, genre, language or year in seconds.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow rounded-4 h-100 bg-white">
+          <div class="card-body text-center p-4">
+            <i class="bi bi-person-check fs-1 mb-3 text-teal"></i>
+            <h5 class="card-title">User-Centered Tools</h5>
+            <p class="card-text text-muted">Manage your borrowings, history, and personal preferences.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+<!-- Modern Teal Theme CSS -->
+<style>
+  body {
+    background-color: #f0fdfa;
+  }
+
+  .text-teal {
+    color: #0d9488;
+  }
+
+  .btn-teal {
+    background-color: #0d9488;
+    color: #fff;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .btn-teal:hover {
+    background-color: #0f766e;
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(13, 148, 136, 0.2);
+  }
+
+  .card-title {
+    color: #0d9488;
+    font-weight: 600;
+  }
+
+  .btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(13, 148, 136, 0.3);
+  }
+</style>
+{% endblock %}

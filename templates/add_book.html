@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+  <div class="card shadow rounded-4 border-0 p-4 w-100" style="max-width: 600px; background-color: #e0f2f1;">
+    <h3 class="text-center mb-4 fw-semibold text-teal">Add a New Book</h3>
+
+    <form method="POST" novalidate>
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-teal-dark">Title</label>
+        <input type="text" name="title" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Enter book title" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-teal-dark">Author Name</label>
+        <input type="text" name="author_name" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Author full name">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-teal-dark">Edition</label>
+        <input type="text" name="edition" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="e.g. 2nd Edition">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-teal-dark">Publisher</label>
+        <input type="text" name="publisher" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Publisher name">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-teal-dark">Language</label>
+        <input type="text" name="language" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="e.g. English">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-teal-dark">Published Year</label>
+        <input type="number" name="published_year" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="e.g. 2023">
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold text-teal-dark">Total Copies</label>
+        <input type="number" name="total_copies" class="form-control form-control-lg rounded-3 border-0 shadow-sm" value="1" min="1">
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-teal btn-lg rounded-3 fw-semibold">
+           Add Book
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Teal Theme Styles -->
+<style>
+  .text-teal {
+    color: #00796b;
+  }
+  .text-teal-dark {
+    color: #004d40;
+  }
+
+  .btn-teal {
+    background-color: #00796b;
+    color: #e0f2f1;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .btn-teal:hover {
+    background-color: #004d40;
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 77, 64, 0.15);
+  }
+
+  .form-control {
+    color: #004d40;
+  }
+
+  .form-control:focus {
+    border-color: #00796b;
+    box-shadow: 0 0 0 0.2rem rgba(0, 121, 107, 0.25);
+    outline: none;
+  }
+
+  .card {
+    color: #004d40;
+  }
+</style>
+{% endblock %}

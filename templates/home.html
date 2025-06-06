@@ -3,5 +3,124 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<h1>Welcome to the Library System</h1>
+<style>
+    body {
+        background: linear-gradient(to right, #e0f2f1, #ffffff);
+    }
+
+    h1.display-4 {
+        color: #00796b;
+        text-shadow: 1px 1px 2px #b2dfdb;
+    }
+
+    .input-group .form-control {
+        border-radius: 30px 0 0 30px;
+        padding: 15px;
+        font-size: 1.1rem;
+        border: 1px solid #80cbc4;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        color: #004d40;
+    }
+
+    .input-group .form-control:focus {
+        border-color: #004d40;
+        box-shadow: 0 0 8px #004d40;
+        outline: none;
+        color: #004d40;
+    }
+
+    .btn.btn-primary {
+        background-color: #00796b;
+        border: none;
+        border-radius: 0 30px 30px 0;
+        font-weight: 600;
+        color: #e0f2f1;
+        transition: 0.2s ease-in-out;
+    }
+
+    .btn.btn-primary:hover {
+        background-color: #004d40;
+        color: #b2dfdb;
+        box-shadow: 0 0 12px #004d40;
+    }
+
+    .card {
+        border: none;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 8px 18px rgba(0, 105, 92, 0.1);
+        transition: transform 0.2s ease-in-out;
+        color: #004d40;
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 25px rgba(0, 105, 92, 0.4);
+    }
+
+    .card-title {
+        color: #004d40;
+        font-weight: bold;
+    }
+
+    .card-text i {
+        color: #00796b;
+    }
+
+    .text-muted i {
+        color: #00796b;
+    }
+
+    .bi-emoji-frown {
+        color: #00796b;
+        text-shadow: 1px 1px 2px #b2dfdb;
+    }
+
+    .text-muted {
+        color: #004d40 !important;
+    }
+</style>
+
+<div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-center mb-4">Welcome to MyLibrary</h1>
+    <p class="lead text-muted">Discover, borrow, and enjoy your favorite books all in one place.</p>
+</div>
+
+<!-- Search Bar -->
+<form method="GET" class="mb-5">
+    <div class="input-group shadow-sm">
+        <input type="text" name="query" class="form-control form-control-lg rounded-start-pill" placeholder="Search books by title or author" value="{{ query }}">
+        <button class="btn btn-primary btn-lg rounded-end-pill" type="submit">
+            <i class="bi bi-search"></i> Search
+        </button>
+    </div>
+</form>
+
+<!-- Search Results -->
+{% if books %}
+<div class="row">
+    {% for book in books %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4">
+            {% if book[5] %}
+            <img src="{{ book[5] }}" class="card-img-top rounded-top-4" alt="{{ book[1] }}" style="height: 250px; object-fit: cover;">
+            {% else %}
+            <img src="{{ url_for('static', filename='default_book.jpg') }}" class="card-img-top rounded-top-4" alt="{{ book[1] }}" style="height: 250px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ book[1] }}</h5>
+                <p class="card-text mb-1"><i class="bi bi-person-fill"></i> <strong>Author:</strong> {{ book[2] }}</p>
+                <p class="card-text mb-1"><i class="bi bi-tags-fill"></i> <strong>Genre:</strong> {{ book[3] }}</p>
+                <p class="card-text"><i class="bi bi-bookmark-check-fill"></i> <strong>Available:</strong> {{ book[4] }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center text-muted mt-4">
+    <i class="bi bi-emoji-frown display-1"></i>
+    <p class="mt-3 fs-5">No books found matching your search. Try another title or author.</p>
+</div>
+{% endif %}
 {% endblock %}

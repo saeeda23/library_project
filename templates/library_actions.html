@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block title %}Library Actions{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(to right, #e0f2f1, #ffffff);
+    }
+
+    .glass-card {
+        backdrop-filter: blur(15px);
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0, 105, 92, 0.15);
+        padding: 30px;
+        max-width: 850px;
+        width: 100%;
+        margin: auto;
+        border: 2px solid #b2dfdb;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        border-radius: 10px 10px 0 0;
+        color: #004d40;
+        font-weight: 600;
+        background: #e0f2f1;
+        margin: 0 5px;
+        transition: all 0.2s ease;
+    }
+
+    .nav-tabs .nav-link.active {
+        background-color: #009688;
+        color: white !important;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0, 150, 136, 0.4);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #00695c;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 12px;
+        padding: 10px;
+        font-size: 1rem;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+        border: 1px solid #b2dfdb;
+        background-color: #ffffff;
+    }
+
+    .form-select option {
+        color: #000;
+    }
+
+    .btn {
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 10px;
+        transition: 0.2s ease-in-out;
+    }
+
+    .btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 10px #009688;
+    }
+
+    .btn-primary {
+        background-color: #009688;
+        border: none;
+    }
+
+    .btn-success {
+        background-color: #388e3c;
+        border: none;
+    }
+
+    .btn-warning {
+        background-color: #f57c00;
+        border: none;
+    }
+
+    h2.section-title {
+        font-weight: 700;
+        color: #00796b;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        text-shadow: 1px 1px 2px #b2dfdb;
+    }
+
+    .alert-info {
+        background-color: #e0f2f1;
+        border-color: #b2dfdb;
+        color: #004d40;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="glass-card shadow-lg">
+        <h2 class="section-title">Library Actions</h2>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs justify-content-center mb-4" id="actionTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="borrow-tab" data-bs-toggle="tab" data-bs-target="#borrow" type="button" role="tab">
+                    Borrow
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="return-tab" data-bs-toggle="tab" data-bs-target="#return" type="button" role="tab">
+                    Return
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reserve-tab" data-bs-toggle="tab" data-bs-target="#reserve" type="button" role="tab">
+                    Reserve
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="actionTabsContent">
+            <!-- Borrow Tab -->
+            <div class="tab-pane fade show active" id="borrow" role="tabpanel">
+                <form method="POST" action="/library_actions" class="mb-4">
+                    <input type="hidden" name="form_type" value="borrow">
+                    <div class="mb-3">
+                        <label class="form-label">Select Book to Borrow:</label>
+                        <select name="book_id" class="form-select" required>
+                            {% for book in available_books %}
+                                <option value="{{ book.book_id }}">{{ book.title }} by {{ book.author_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100"> Borrow Book</button>
+                </form>
+            </div>
+
+            <!-- Return Tab -->
+            <div class="tab-pane fade" id="return" role="tabpanel">
+                <form method="POST" action="/library_actions" class="mb-4">
+                    <input type="hidden" name="form_type" value="return">
+                    <div class="mb-3">
+                        <label class="form-label">Select Borrowed Book to Return:</label>
+                        <select name="transaction_id" class="form-select" required>
+                            {% for book in borrowed_books %}
+                                <option value="{{ book.transaction_id }}">
+                                    {{ book.title }} (Issued: {{ book.issue_date }}, Due: {{ book.due_date }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100"> Return Book</button>
+                </form>
+            </div>
+
+            <!-- Reserve Tab -->
+            <div class="tab-pane fade" id="reserve" role="tabpanel">
+                <form method="POST" action="/library_actions" class="mb-4">
+                    <input type="hidden" name="form_type" value="reserve">
+                    <div class="mb-3">
+                        <label class="form-label">Select Book to Reserve:</label>
+                        <select name="book_id" class="form-select" required>
+                            {% for book in unavailable_books %}
+                                <option value="{{ book.book_id }}">{{ book.title }} by {{ book.author_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-warning text-white w-100"> Reserve Book</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-info mt-4">
+                    <ul class="mb-0">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}
