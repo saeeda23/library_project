@@ -26,7 +26,6 @@ def dashboard():
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
-    # Summary stats
     c.execute("SELECT COUNT(*) FROM Books")
     total_books = c.fetchone()[0]
 
@@ -39,7 +38,6 @@ def dashboard():
     c.execute("SELECT COUNT(*) FROM Transactions WHERE status = 'returned'")
     returned_books = c.fetchone()[0]
 
-    # Transaction search
     search_query = request.args.get('q')
     if search_query:
         c.execute("""
@@ -118,7 +116,6 @@ def library_actions():
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
-    # Fetch data
     c.execute("SELECT * FROM Books WHERE available_copies > 0")
     available_books = c.fetchall()
 
@@ -133,7 +130,6 @@ def library_actions():
     c.execute("SELECT * FROM Books WHERE available_copies = 0")
     unavailable_books = c.fetchall()
 
-    # Handle form submission
     if request.method == 'POST':
         form_type = request.form.get('form_type')
 
@@ -193,7 +189,6 @@ def library_actions():
         conn.close()
         return redirect('/library_actions')
 
-    # ✅ Moved close to the very end
     rendered_page = render_template(
         'library_actions.html',
         available_books=available_books,
@@ -202,7 +197,6 @@ def library_actions():
     )
     conn.close()
     return rendered_page
-
 
 
 # -------------------------

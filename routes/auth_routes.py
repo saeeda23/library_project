@@ -19,7 +19,6 @@ def login():
             session['user_id'] = user[0]
             session['username'] = user[1]
             session['role'] = user[4]
-            # Redirect to root, which handles role-based redirect
             return redirect('/')
         else:
             flash('Invalid login credentials', 'danger')
