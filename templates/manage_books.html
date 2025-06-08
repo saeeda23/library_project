@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <!-- Add Book Form -->
+  <div class="card shadow rounded-4 border-0 p-4 mb-5" style="background-color: #e0f2f1;">
+    <h3 class="text-center fw-semibold text-teal mb-4">Add a New Book</h3>
+
+    <form method="POST" novalidate>
+      <input type="hidden" name="action" value="add">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <input type="text" name="title" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Title" required>
+        </div>
+        <div class="col-md-6">
+          <input type="text" name="author_name" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Author Name">
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="edition" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Edition">
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="publisher" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Publisher">
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="language" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Language">
+        </div>
+        <div class="col-md-6">
+          <input type="number" name="published_year" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Published Year">
+        </div>
+        <div class="col-md-6">
+          <input type="number" name="total_copies" class="form-control form-control-lg rounded-3 border-0 shadow-sm" placeholder="Total Copies" min="1" value="1">
+        </div>
+      </div>
+
+      <div class="d-grid mt-4">
+        <button type="submit" class="btn btn-teal btn-lg rounded-3 fw-semibold">Add Book</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Book Table -->
+  <div class="card shadow rounded-4 border-0 p-4" style="background-color: #ffffff;">
+    <h4 class="mb-3 text-teal fw-semibold">Manage Books</h4>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-teal">
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Edition</th>
+            <th>Publisher</th>
+            <th>Language</th>
+            <th>Year</th>
+            <th>Total</th>
+            <th>Available</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for book in books %}
+          <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author_name }}</td>
+            <td>{{ book.edition }}</td>
+            <td>{{ book.publisher }}</td>
+            <td>{{ book.language }}</td>
+            <td>{{ book.published_year }}</td>
+            <td>{{ book.total_copies }}</td>
+            <td>{{ book.available_copies }}</td>
+            <td>
+              <!-- Edit Button -->
+              <button class="btn btn-sm btn-outline-teal" data-bs-toggle="modal" data-bs-target="#editModal{{ book.book_id }}">Edit</button>
+
+              <!-- Delete Form -->
+              <form method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="book_id" value="{{ book.book_id }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+
+          <!-- Edit Modal -->
+          <div class="modal fade" id="editModal{{ book.book_id }}" tabindex="-1" aria-labelledby="editLabel{{ book.book_id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content rounded-4">
+                <form method="POST">
+                  <div class="modal-header bg-teal text-white rounded-top-4">
+                    <h5 class="modal-title" id="editLabel{{ book.book_id }}">Edit Book - {{ book.title }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body row g-3 p-4">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="book_id" value="{{ book.book_id }}">
+
+                    <div class="col-md-6"><input type="text" name="title" value="{{ book.title }}" class="form-control" required></div>
+                    <div class="col-md-6"><input type="text" name="author_name" value="{{ book.author_name }}" class="form-control"></div>
+                    <div class="col-md-4"><input type="text" name="edition" value="{{ book.edition }}" class="form-control"></div>
+                    <div class="col-md-4"><input type="text" name="publisher" value="{{ book.publisher }}" class="form-control"></div>
+                    <div class="col-md-4"><input type="text" name="language" value="{{ book.language }}" class="form-control"></div>
+                    <div class="col-md-6"><input type="number" name="published_year" value="{{ book.published_year }}" class="form-control"></div>
+                    <div class="col-md-3"><input type="number" name="total_copies" value="{{ book.total_copies }}" class="form-control" min="1"></div>
+                    <div class="col-md-3"><input type="number" name="available_copies" value="{{ book.available_copies }}" class="form-control" min="0"></div>
+                  </div>
+                  <div class="modal-footer p-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-teal">Update</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Theme Styles -->
+<style>
+  .text-teal { color: #00796b; }
+  .btn-teal { background-color: #00796b; color: #e0f2f1; border: none; }
+  .btn-teal:hover { background-color: #004d40; color: #ffffff; }
+  .btn-outline-teal { border-color: #00796b; color: #00796b; }
+  .btn-outline-teal:hover { background-color: #00796b; color: white; }
+  .bg-teal { background-color: #00796b !important; }
+  .table-teal th { background-color: #00796b; color: white; }
+</style>
+{% endblock %}

@@ -71,37 +71,92 @@ def dashboard():
 
 
 # -------------------------
-# Add Book
+# Manage Books (Add, Edit, Delete)
 # -------------------------
-@book_bp.route('/add_book', methods=['GET', 'POST'])
+@book_bp.route('/manage_books', methods=['GET', 'POST'])
 @login_required
-def add_book():
+def manage_books():
     # Only allow admin users
     if session.get('role') != 'admin':
         flash("Unauthorized access.")
         return redirect('/')
 
+    conn = sqlite3.connect('library.db')
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+
+    # Handle form submission
     if request.method == 'POST':
-        title = request.form['title']
-        author = request.form['author_name']
-        edition = request.form['edition']
-        publisher = request.form['publisher']
-        language = request.form['language']
-        year = request.form['published_year']
-        total = int(request.form['total_copies'])
+        form = request.form
+        action = form.get('action')
 
-        conn = sqlite3.connect('library.db')
-        c = conn.cursor()
-        c.execute("""
-            INSERT INTO Books (title, author_name, edition, publisher, language, published_year, total_copies, available_copies)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (title, author, edition, publisher, language, year, total, total))
+        if action == 'add':
+            total = int(form['total_copies'])
+            c.execute("""
+                INSERT INTO Books (title, author_name, edition, publisher, language, published_year, total_copies, available_copies)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                form['title'], form['author_name'], form['edition'],
+                form['publisher'], form['language'], form['published_year'],
+                total, total
+            ))
+            flash('Book added successfully!')
+
+        elif action == 'edit':
+            c.execute("""
+                UPDATE Books SET 
+                    title = ?, author_name = ?, edition = ?, 
+                    publisher = ?, language = ?, published_year = ?, 
+                    total_copies = ?, available_copies = ?
+                WHERE book_id = ?
+            """, (
+                form['title'], form['author_name'], form['edition'],
+                form['publisher'], form['language'], form['published_year'],
+                form['total_copies'], form['available_copies'],
+                form['book_id']
+            ))
+            flash('Book updated successfully!')
+
+        elif action == 'delete':
+            c.execute("DELETE FROM Books WHERE book_id = ?", (form['book_id'],))
+            flash('Book deleted successfully!')
+
         conn.commit()
-        conn.close()
-        flash('Book added successfully!')
-        return redirect('/add_book')
 
-    return render_template('add_book.html')
+    # Fetch all books to display
+    c.execute("SELECT * FROM Books")
+    books = c.fetchall()
+    conn.close()
+
+    return render_template('manage_books.html', books=books)
+
+
+# -------------------------
+# Manage User (Delete and See Info)
+# -------------------------
+@book_bp.route('/manage_users', methods=['GET', 'POST'])
+@login_required
+def manage_users():
+    if session.get('role') != 'admin':
+        flash("Unauthorized access.")
+        return redirect('/')
+
+    conn = sqlite3.connect('library.db')
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        if user_id and str(user_id) != str(session.get('user_id')):
+            c.execute("DELETE FROM Users WHERE user_id = ?", (user_id,))
+            flash("User deleted successfully.")
+            conn.commit()
+
+    c.execute("SELECT * FROM Users ORDER BY role DESC, name ASC")
+    users = c.fetchall()
+    conn.close()
+
+    return render_template('manage_users.html', users=users)
 
 
 # -------------------------

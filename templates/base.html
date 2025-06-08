@@ -68,7 +68,8 @@
                     {% if session.get('user_id') %}
                         {% if session.get('role') == 'admin' %}
                             <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/add_book">Add Book</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/manage_books">Manage Book</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/manage_users">Manage Users</a></li>
                         {% endif %}
                         <li class="nav-item"><a class="nav-link" href="/library_actions">Library Actions</a></li>
                         <li class="nav-item"><a class="nav-link" href="/user_history">History</a></li>
